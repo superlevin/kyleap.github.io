@@ -144,6 +144,111 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-hangfire-sql-server" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/07/25/hangfire-sql-server/">在ASP.NET利用Hangfire搭配SQL Server來管理排程作業</a>
+    </h1>
+  
+
+        
+        <a href="/2017/07/25/hangfire-sql-server/" class="archive-article-date">
+  	<time datetime="2017-07-24T16:34:28.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-25</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在以往寫.NET排程需求時，我通常會用Console Application 搭配 Windows Server的排程器來做設定，最近嘗試在專案使用 <a href="https://www.hangfire.io/" target="_blank" rel="external">hangfire</a> 來做管理，hangfire 是一套open source的Freamwork，它能很容易的管理背景作業，並且有 Dashboard 介面來查看作業狀態及執行，本篇文章將以ASP.NET專案搭配SQL Server做個安裝筆記。</p>
+<h2 id="Nuget-安裝套件"><a href="#Nuget-安裝套件" class="headerlink" title="Nuget 安裝套件"></a>Nuget 安裝套件</h2><ol>
+<li>Hangfire.core <a href="">https://www.nuget.org/packages/Hangfire.Core/</a></li>
+<li>Hangfire.SqlServer <a href="">https://www.nuget.org/packages/Hangfire.SqlServer/</a></li>
+</ol>
+<h2 id="Create-DB-Schema-存在Jobs的資料"><a href="#Create-DB-Schema-存在Jobs的資料" class="headerlink" title="Create DB Schema 存在Jobs的資料"></a>Create DB Schema 存在Jobs的資料</h2><p>在方案nuget package裡的Hangfire.SqlServer資料夾，應會有所需Table的Script</p>
+<img src="/2017/07/25/hangfire-sql-server/0247.png" alt="0247.png" title="">
+<p>執行安裝後應該會有底下這些 Table</p>
+<img src="/2017/07/25/hangfire-sql-server/0554.png" alt="0554.png" title="">
+<h2 id="專案設定"><a href="#專案設定" class="headerlink" title="專案設定"></a>專案設定</h2><p>在ASP.NET專案的 Startup.cs 檔案引入hangfire</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="built_in">void</span> Configuration(IAppBuilder app)</div><div class="line">&#123;</div><div class="line">    GlobalConfiguration.Configuration.UseSqlServerStorage</div><div class="line">    (</div><div class="line">        <span class="string">"hangfire-sqlserver"</span>,</div><div class="line">        <span class="keyword">new</span> SqlServerStorageOptions</div><div class="line">        &#123;</div><div class="line">            <span class="comment">// if it is set to 1 minutes, each worker will run a keep-alive query each minute when processing a job</span></div><div class="line">            QueuePollInterval = TimeSpan.FromMinutes(<span class="number">1</span>) </div><div class="line">        &#125;</div><div class="line">    );</div><div class="line"></div><div class="line">    <span class="comment">// 啟用HanfireServer</span></div><div class="line">    app.UseHangfireServer(<span class="keyword">new</span> BackgroundJobServerOptions &#123; WorkerCount = <span class="number">1</span> &#125;);</div><div class="line">    RecurringJob.AddOrUpdate&lt;SendMessageAlert&gt;(<span class="string">"SendMessageAlert"</span>, <span class="function"><span class="params">x</span> =&gt;</span> x.SendMessage(), </div><div class="line">        Cron.MinuteInterval(<span class="number">1</span>), </div><div class="line">        TimeZoneInfo.FindSystemTimeZoneById(<span class="string">"Taipei Standard Time"</span>));</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>SendMessageAlert</code> 是一個自己建立的類別，可以將排程實際的所需的實作寫在裡面，譬如實務上很常發送排程E-mail通知信件，而以此例我們設定排程頻率為1分鐘執行一次，視實際情況可以調整為 <code>Daily</code> <code>Hourly</code> <code>Monthly</code> <code>Weekly</code> <code>Yearly</code></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SendMessageAlert</span></span></div><div class="line">&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">SendMessage</span><span class="params">()</span></span></div><div class="line">    &#123;</div><div class="line">        <span class="comment">// <span class="doctag">TODO:</span>發送排程信件</span></div><div class="line">        Console.WriteLine(DateTime.Now);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>到此步驟可以執行看看，每分鐘應該會進入SendMessage Method</li>
+</ul>
+<h2 id="加入-Dashboard"><a href="#加入-Dashboard" class="headerlink" title="加入 Dashboard"></a>加入 Dashboard</h2><p>回到 Startup.cs，只要加入以下程式即可開啟Dashboard功能</p>
+<figure class="highlight haxe"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 開啟Hangfire的Dashboard</span></div><div class="line">app.UseHangfireDashboard(<span class="string">"/hangfire"</span>, <span class="keyword">new</span> <span class="type">DashboardOptions</span></div><div class="line">&#123;</div><div class="line">    Authorization = <span class="keyword">new</span><span class="type"></span>[] &#123; <span class="keyword">new</span> <span class="type">HangfireAuthorizationFilter</span>() &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>當然這個Dashboard我們不希望能讓任何人能存取，所以能自訂一個 <code>HangfireAuthorizationFilter</code> 來驗證是否有存取權限</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HangfireAuthorizationFilter</span> : <span class="type">IDashboardAuthorizationFilter</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">public</span> bool Authorize([NotNull] DashboardContext context)</div><div class="line">    &#123;</div><div class="line">        <span class="comment">// 是否允許存取hangfire Dashboard</span></div><div class="line">        <span class="keyword">if</span> (HttpContext.Current.User.IsInRole(<span class="string">"Admin"</span>))</div><div class="line">        &#123;</div><div class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">else</span></div><div class="line">        &#123;</div><div class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="結果圖"><a href="#結果圖" class="headerlink" title="結果圖"></a>結果圖</h2><p>數據分析</p>
+<img src="/2017/07/25/hangfire-sql-server/3645.png" alt="3645.png" title="">
+<p>排程紀錄，也可手動執行</p>
+<img src="/2017/07/25/hangfire-sql-server/4020.png" alt="4020.png" title="">
+<h2 id="參考連結"><a href="#參考連結" class="headerlink" title="參考連結"></a>參考連結</h2><ul>
+<li><a href="http://blog.kkbruce.net/2015/09/hangfire-aspnet-mvc-webapi.html#.WXYg84iGOUk" target="_blank" rel="external">http://blog.kkbruce.net/2015/09/hangfire-aspnet-mvc-webapi.html#.WXYg84iGOUk</a></li>
+<li><a href="https://dotblogs.com.tw/rainmaker/2015/08/19/153169" target="_blank" rel="external">https://dotblogs.com.tw/rainmaker/2015/08/19/153169</a></li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">ASP.NET</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">HangFire</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/07/25/hangfire-sql-server/">閱讀全文</a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-my-first-helloworld" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -310,6 +415,14 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
             <input type="checkbox" q-on="click:toggleTag(e)" q-attr="checked:showTags">
           </label>
           <ul class="article-tag-list" q-show="showTags">
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">ASP.NET</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">HangFire</a>
+              </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">碎碎念</a>
