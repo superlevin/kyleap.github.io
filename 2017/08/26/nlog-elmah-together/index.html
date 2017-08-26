@@ -6,24 +6,24 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="//litten.me">
-  <title>在ASP.NET利用Hangfire搭配SQL Server來管理排程作業 | 程式宅急便</title>
+  <title>Elmah + Nlog 摻在一起做Exception Logs吧 - Elmah 部分 | 程式宅急便</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="前言在以往寫.NET排程需求時，我通常會用Console Application 搭配 Windows Server的排程器來做設定，最近嘗試在專案使用 hangfire 來做管理，hangfire 是一套open source的Freamwork，它能很容易的管理背景作業，並且有 Dashboard 介面來查看作業狀態及執行，本篇文章將以ASP.NET專案搭配SQL Server做個安裝筆記。">
-<meta name="keywords" content="ASP.NET,HangFire">
+  <meta name="description" content="前言Elmah一看就知道是老江湖了，在前部落格也寫過文章，本次新系統套上時因要內部分享，所以再順便重新寫一篇整理到此Blog來。系統上線後，一定會遇到一些Bug，但如何在User抱怨之前，將Bug以最短時間內處理掉是很重要的是。Elmah能幫我們紀錄網站所發生的錯誤，並可以配上一些通知機制，來通知系統管理員查看。而系統一些自訂例外處理的Log我習慣使用Nlog，但如果能統一個Dashboard查看">
+<meta name="keywords" content="ASP.NET,Elmah">
 <meta property="og:type" content="article">
-<meta property="og:title" content="在ASP.NET利用Hangfire搭配SQL Server來管理排程作業">
-<meta property="og:url" content="//litten.me/2017/07/25/hangfire-sql-server/index.html">
+<meta property="og:title" content="Elmah + Nlog 摻在一起做Exception Logs吧 - Elmah 部分">
+<meta property="og:url" content="//litten.me/2017/08/26/nlog-elmah-together/index.html">
 <meta property="og:site_name" content="程式宅急便">
-<meta property="og:description" content="前言在以往寫.NET排程需求時，我通常會用Console Application 搭配 Windows Server的排程器來做設定，最近嘗試在專案使用 hangfire 來做管理，hangfire 是一套open source的Freamwork，它能很容易的管理背景作業，並且有 Dashboard 介面來查看作業狀態及執行，本篇文章將以ASP.NET專案搭配SQL Server做個安裝筆記。">
-<meta property="og:image" content="//litten.me/2017/07/25/hangfire-sql-server/0247.png">
-<meta property="og:image" content="//litten.me/2017/07/25/hangfire-sql-server/0554.png">
-<meta property="og:image" content="//litten.me/2017/07/25/hangfire-sql-server/3645.png">
-<meta property="og:image" content="//litten.me/2017/07/25/hangfire-sql-server/4020.png">
-<meta property="og:updated_time" content="2017-07-30T15:28:21.144Z">
+<meta property="og:description" content="前言Elmah一看就知道是老江湖了，在前部落格也寫過文章，本次新系統套上時因要內部分享，所以再順便重新寫一篇整理到此Blog來。系統上線後，一定會遇到一些Bug，但如何在User抱怨之前，將Bug以最短時間內處理掉是很重要的是。Elmah能幫我們紀錄網站所發生的錯誤，並可以配上一些通知機制，來通知系統管理員查看。而系統一些自訂例外處理的Log我習慣使用Nlog，但如果能統一個Dashboard查看">
+<meta property="og:image" content="//litten.me/2017/08/26/nlog-elmah-together/3439.png">
+<meta property="og:image" content="//litten.me/2017/08/26/nlog-elmah-together/4156.png">
+<meta property="og:image" content="//litten.me/2017/08/26/nlog-elmah-together/446.png">
+<meta property="og:image" content="//litten.me/2017/08/26/nlog-elmah-together/1925.png">
+<meta property="og:updated_time" content="2017-08-26T06:55:55.104Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="在ASP.NET利用Hangfire搭配SQL Server來管理排程作業">
-<meta name="twitter:description" content="前言在以往寫.NET排程需求時，我通常會用Console Application 搭配 Windows Server的排程器來做設定，最近嘗試在專案使用 hangfire 來做管理，hangfire 是一套open source的Freamwork，它能很容易的管理背景作業，並且有 Dashboard 介面來查看作業狀態及執行，本篇文章將以ASP.NET專案搭配SQL Server做個安裝筆記。">
-<meta name="twitter:image" content="//litten.me/2017/07/25/hangfire-sql-server/0247.png">
+<meta name="twitter:title" content="Elmah + Nlog 摻在一起做Exception Logs吧 - Elmah 部分">
+<meta name="twitter:description" content="前言Elmah一看就知道是老江湖了，在前部落格也寫過文章，本次新系統套上時因要內部分享，所以再順便重新寫一篇整理到此Blog來。系統上線後，一定會遇到一些Bug，但如何在User抱怨之前，將Bug以最短時間內處理掉是很重要的是。Elmah能幫我們紀錄網站所發生的錯誤，並可以配上一些通知機制，來通知系統管理員查看。而系統一些自訂例外處理的Log我習慣使用Nlog，但如果能統一個Dashboard查看">
+<meta name="twitter:image" content="//litten.me/2017/08/26/nlog-elmah-together/3439.png">
   
     <link rel="alternative" href="/atom.xml" title="程式宅急便" type="application/atom+xml">
   
@@ -161,55 +161,77 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-hangfire-sql-server" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-nlog-elmah-together" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      在ASP.NET利用Hangfire搭配SQL Server來管理排程作業
+      Elmah + Nlog 摻在一起做Exception Logs吧 - Elmah 部分
     </h1>
   
 
         
-        <a href="/2017/07/25/hangfire-sql-server/" class="archive-article-date">
-  	<time datetime="2017-07-24T16:34:28.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-25</time>
+        <a href="/2017/08/26/nlog-elmah-together/" class="archive-article-date">
+  	<time datetime="2017-08-26T05:26:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-08-26</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在以往寫.NET排程需求時，我通常會用Console Application 搭配 Windows Server的排程器來做設定，最近嘗試在專案使用 <a href="https://www.hangfire.io/" target="_blank" rel="external">hangfire</a> 來做管理，hangfire 是一套open source的Freamwork，它能很容易的管理背景作業，並且有 Dashboard 介面來查看作業狀態及執行，本篇文章將以ASP.NET專案搭配SQL Server做個安裝筆記。</p>
-<a id="more"></a>
-<h2 id="Nuget-安裝套件"><a href="#Nuget-安裝套件" class="headerlink" title="Nuget 安裝套件"></a>Nuget 安裝套件</h2><ol>
-<li>Hangfire.core <a href="">https://www.nuget.org/packages/Hangfire.Core/</a></li>
-<li>Hangfire.SqlServer <a href="">https://www.nuget.org/packages/Hangfire.SqlServer/</a></li>
-</ol>
-<h2 id="Create-DB-Schema-存Jobs的資料"><a href="#Create-DB-Schema-存Jobs的資料" class="headerlink" title="Create DB Schema 存Jobs的資料"></a>Create DB Schema 存Jobs的資料</h2><p>在方案nuget package裡的Hangfire.SqlServer資料夾，應會有所需Table的Script</p>
-<img src="/2017/07/25/hangfire-sql-server/0247.png" alt="0247.png" title="">
-<p>執行安裝後應該會有底下這些 Table</p>
-<img src="/2017/07/25/hangfire-sql-server/0554.png" alt="0554.png" title="">
-<h2 id="專案設定"><a href="#專案設定" class="headerlink" title="專案設定"></a>專案設定</h2><p>在ASP.NET專案的 Startup.cs 檔案引入hangfire</p>
-<figure class="highlight typescript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="built_in">void</span> Configuration(IAppBuilder app)</div><div class="line">&#123;</div><div class="line">    GlobalConfiguration.Configuration.UseSqlServerStorage</div><div class="line">    (</div><div class="line">        <span class="string">"hangfire-sqlserver"</span>,</div><div class="line">        <span class="keyword">new</span> SqlServerStorageOptions</div><div class="line">        &#123;</div><div class="line">            <span class="comment">// if it is set to 1 minutes, each worker will run a keep-alive query each minute when processing a job</span></div><div class="line">            QueuePollInterval = TimeSpan.FromMinutes(<span class="number">1</span>) </div><div class="line">        &#125;</div><div class="line">    );</div><div class="line"></div><div class="line">    <span class="comment">// 啟用HanfireServer</span></div><div class="line">    app.UseHangfireServer(<span class="keyword">new</span> BackgroundJobServerOptions &#123; WorkerCount = <span class="number">1</span> &#125;);</div><div class="line">    RecurringJob.AddOrUpdate&lt;SendMessageAlert&gt;(<span class="string">"SendMessageAlert"</span>, <span class="function"><span class="params">x</span> =&gt;</span> x.SendMessage(), </div><div class="line">        Cron.MinuteInterval(<span class="number">1</span>), </div><div class="line">        TimeZoneInfo.FindSystemTimeZoneById(<span class="string">"Taipei Standard Time"</span>));</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p><code>SendMessageAlert</code> 是一個自己建立的類別，可以將排程實際的所需的實作寫在裡面，譬如實務上很常發送排程E-mail通知信件，而以此例我們設定排程頻率為1分鐘執行一次，視實際情況可以調整為 <code>Daily</code> <code>Hourly</code> <code>Monthly</code> <code>Weekly</code> <code>Yearly</code></p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SendMessageAlert</span></span></div><div class="line">&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">SendMessage</span><span class="params">()</span></span></div><div class="line">    &#123;</div><div class="line">        <span class="comment">// <span class="doctag">TODO:</span>發送排程信件</span></div><div class="line">        Console.WriteLine(DateTime.Now);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<ul>
-<li>到此步驟可以執行看看，每分鐘應該會進入SendMessage Method</li>
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><a href="https://elmah.github.io/" target="_blank" rel="external">Elmah</a>一看就知道是<a href="https://i1.kknews.cc/large/2a460000eae5ca834cd8" target="_blank" rel="external">老江湖</a>了，在前部落格也寫過文章，本次新系統套上時因要內部分享，所以再順便重新寫一篇整理到此Blog來。<br>系統上線後，一定會遇到一些Bug，但如何在User抱怨之前，將Bug以最短時間內處理掉是很重要的是。Elmah能幫我們紀錄網站所發生的錯誤，並可以配上一些通知機制，來通知系統管理員查看。而系統一些自訂例外處理的Log我習慣使用Nlog，但如果能統一個Dashboard查看就太方便了，故預計以兩篇文章來紀錄個整合。</p>
+<h1 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h1><ul>
+<li>ASP.NET Web API (.NET Freamwork 4.7)</li>
+<li>Elmah v1.1.2</li>
+<li>Elmah.SqlServer (option) v1.2.0</li>
 </ul>
-<h2 id="加入-Dashboard"><a href="#加入-Dashboard" class="headerlink" title="加入 Dashboard"></a>加入 Dashboard</h2><p>回到 Startup.cs，只要加入以下程式即可開啟Dashboard功能</p>
-<figure class="highlight haxe"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 開啟Hangfire的Dashboard</span></div><div class="line">app.UseHangfireDashboard(<span class="string">"/hangfire"</span>, <span class="keyword">new</span> <span class="type">DashboardOptions</span></div><div class="line">&#123;</div><div class="line">    Authorization = <span class="keyword">new</span><span class="type"></span>[] &#123; <span class="keyword">new</span> <span class="type">HangfireAuthorizationFilter</span>() &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
-<p>當然這個Dashboard我們不希望能讓任何人能存取，所以能自訂一個 <code>HangfireAuthorizationFilter</code> 來驗證是否有存取權限</p>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HangfireAuthorizationFilter</span> : <span class="type">IDashboardAuthorizationFilter</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">public</span> bool Authorize([NotNull] DashboardContext context)</div><div class="line">    &#123;</div><div class="line">        <span class="comment">// 是否允許存取hangfire Dashboard</span></div><div class="line">        <span class="keyword">if</span> (HttpContext.Current.User.IsInRole(<span class="string">"Admin"</span>))</div><div class="line">        &#123;</div><div class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">else</span></div><div class="line">        &#123;</div><div class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h2 id="結果圖"><a href="#結果圖" class="headerlink" title="結果圖"></a>結果圖</h2><p>數據分析</p>
-<img src="/2017/07/25/hangfire-sql-server/3645.png" alt="3645.png" title="">
-<p>排程紀錄，也可手動執行</p>
-<img src="/2017/07/25/hangfire-sql-server/4020.png" alt="4020.png" title="">
-<h2 id="參考連結"><a href="#參考連結" class="headerlink" title="參考連結"></a>參考連結</h2><ul>
-<li><a href="http://blog.kkbruce.net/2015/09/hangfire-aspnet-mvc-webapi.html#.WXYg84iGOUk" target="_blank" rel="external">http://blog.kkbruce.net/2015/09/hangfire-aspnet-mvc-webapi.html#.WXYg84iGOUk</a></li>
-<li><a href="https://dotblogs.com.tw/rainmaker/2015/08/19/153169" target="_blank" rel="external">https://dotblogs.com.tw/rainmaker/2015/08/19/153169</a></li>
+<h1 id="步驟"><a href="#步驟" class="headerlink" title="步驟"></a>步驟</h1><ul>
+<li>安裝 Elmah</li>
+<li>安裝 Elmah.SqlServer</li>
+<li>Web API 增加捕捉例外</li>
+<li>其他實用調整</li>
 </ul>
+<h2 id="安裝-Elmah-amp-Elmah-SqlServer"><a href="#安裝-Elmah-amp-Elmah-SqlServer" class="headerlink" title="安裝 Elmah &amp; Elmah.SqlServer"></a>安裝 Elmah &amp; Elmah.SqlServer</h2><p>透過 Nuget 安裝</p>
+<img src="/2017/08/26/nlog-elmah-together/3439.png" alt="3439.png" title="">
+<p>在 WebConfig 能看到下面這段，預設dashboard的route是elmah.axd，當然也可以在此config修改這個路徑。</p>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">&lt;location path=<span class="string">"elmah.axd"</span> inheritInChildApplications=<span class="string">"false"</span>&gt;</div><div class="line">   &lt;system.web&gt;</div><div class="line">     &lt;httpHandlers&gt;</div><div class="line">       &lt;add verb=<span class="string">"<span class="keyword">POST</span>,<span class="keyword">GET</span>,<span class="keyword">HEAD</span>"</span> path=<span class="string">"elmah.axd"</span> type=<span class="string">"Elmah.ErrorLogPageFactory, Elmah"</span> /&gt;</div><div class="line">     &lt;/httpHandlers&gt;</div><div class="line">     &lt;!-- </div><div class="line">       See http://code.google.com/p/elmah/wiki/SecuringErrorLogPages for </div><div class="line">       more information on using ASP.NET authorization securing ELMAH.</div><div class="line"></div><div class="line">     &lt;authorization&gt;</div><div class="line">       &lt;allow roles=<span class="string">"admin"</span> /&gt;</div><div class="line">       &lt;deny users=<span class="string">"*"</span> /&gt;  </div><div class="line">     &lt;/authorization&gt;</div><div class="line">     --&gt;</div><div class="line">   &lt;/system.web&gt;</div><div class="line">   &lt;system.webServer&gt;</div><div class="line">     &lt;handlers&gt;</div><div class="line">       &lt;add name=<span class="string">"ELMAH"</span> verb=<span class="string">"<span class="keyword">POST</span>,<span class="keyword">GET</span>,<span class="keyword">HEAD</span>"</span> path=<span class="string">"elmah.axd"</span> type=<span class="string">"Elmah.ErrorLogPageFactory, Elmah"</span> preCondition=<span class="string">"integratedMode"</span> /&gt;</div><div class="line">     &lt;/handlers&gt;</div><div class="line">   &lt;/system.webServer&gt;</div><div class="line"> &lt;/location&gt;</div></pre></td></tr></table></figure>
+<p>直接執行第一個404錯誤，接著連到 <a href="http://localhost:xxxx/elmah.axd" target="_blank" rel="external">http://localhost:xxxx/elmah.axd</a> 就能捕捉到第一個例外，按 Detail 還能看到更多完整錯誤訊息。</p>
+<p>而如果想要把Log記錄到SQL Server，可以按照以下步驟</p>
+<img src="/2017/08/26/nlog-elmah-together/4156.png" alt="4156.png" title="">
+<p>安裝完後可以看到App_Readme多了SQL Table建立的Script</p>
+<img src="/2017/08/26/nlog-elmah-together/446.png" alt="446.png" title="">
+<p>將此Script丟到你的資料庫執行，完成建立以下Table</p>
+<img src="/2017/08/26/nlog-elmah-together/1925.png" alt="1925.png" title="">
+<p>修改 WebConfig 的 connection string</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">connectionStrings</span>&gt;</span></div><div class="line">    <span class="comment">&lt;!-- <span class="doctag">TODO:</span> Replace the ****'s with the correct entries --&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">add</span> <span class="attr">name</span>=<span class="string">"elmah-sqlserver"</span> <span class="attr">connectionString</span>=<span class="string">"Data Source=****;User ID=****;Password=****;Initial Catalog=****;"</span> <span class="attr">providerName</span>=<span class="string">"System.Data.SqlClient"</span> /&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">connectionStrings</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>再模擬一次 404 錯誤，確認錯誤訊息能寫入 SQL Server</p>
+<h2 id="Web-API-如何擷取例外"><a href="#Web-API-如何擷取例外" class="headerlink" title="Web API 如何擷取例外"></a>Web API 如何擷取例外</h2><p>保哥已經有很清楚的一篇了 :) :)</p>
+<p>延伸閱讀:<a href="https://blog.miniasp.com/post/2013/01/01/ASPNET-Web-API-and-ELMAH-Integration.aspx" target="_blank" rel="external">如何在 ASP.NET Web API 套用 ELMAH 錯誤紀錄模組</a></p>
+<p>實務上我也會在 <code>ExceptionFilterAttribute</code> 作統一的錯誤格式回傳處理</p>
+<h2 id="Elmah-其他必要小提醒"><a href="#Elmah-其他必要小提醒" class="headerlink" title="Elmah 其他必要小提醒"></a>Elmah 其他必要小提醒</h2><blockquote>
+<h3 id="如何在Code直接寫入Elmah"><a href="#如何在Code直接寫入Elmah" class="headerlink" title="如何在Code直接寫入Elmah?"></a>如何在Code直接寫入Elmah?</h3><p>只要利用 <code>ErrorSignal</code> 即可在程式裡捕捉例外</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">try</span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="keyword">Exception</span>(<span class="string">"發生錯誤!"</span>);</div><div class="line">&#125;</div><div class="line"><span class="keyword">catch</span> (<span class="keyword">Exception</span> e)</div><div class="line">&#123;</div><div class="line">    ErrorSignal.FromCurrentContext().Raise(e);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</blockquote>
+<hr>
+<blockquote>
+<h3 id="如何管控-Dashboard-權限"><a href="#如何管控-Dashboard-權限" class="headerlink" title="如何管控 Dashboard 權限?"></a>如何管控 Dashboard 權限?</h3><p>只要取消 WebConfig Elmah Location 註解 ，改成系統自定義的角色<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">authorization</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">allow</span> <span class="attr">roles</span>=<span class="string">"admin"</span> /&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">deny</span> <span class="attr">users</span>=<span class="string">"*"</span> /&gt;</span>  </div><div class="line"><span class="tag">&lt;/<span class="name">authorization</span>&gt;</span></div></pre></td></tr></table></figure></p>
+</blockquote>
+<hr>
+<blockquote>
+<h3 id="如何錯誤發生時發送Mail通知"><a href="#如何錯誤發生時發送Mail通知" class="headerlink" title="如何錯誤發生時發送Mail通知?"></a>如何錯誤發生時發送Mail通知?</h3><p>在 WebConfig 設定 SMTP<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">system.net</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">mailSettings</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">smtp</span> <span class="attr">deliveryMethod</span> =<span class="string">"Network"</span>&gt;</span></div><div class="line">      <span class="tag">&lt;<span class="name">network</span> <span class="attr">host</span>=<span class="string">"smtp.gmail.com"</span> <span class="attr">port</span>=<span class="string">"587"</span> <span class="attr">userName</span>=<span class="string">"xxxxx@gmail"</span>   <span class="attr">password</span>=<span class="string">"xxxxxx"</span> /&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">smtp</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">mailSettings</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">system.net</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>在 webConfg Elmah 區塊增加 errorMail，設定相關通知對象<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&lt;errorMail <span class="attribute">from</span>=<span class="string">"xxxxx@gmail.com"</span> <span class="attribute">to</span>=<span class="string">"xxxxxx@gmail.com"</span></div><div class="line">              <span class="attribute">async</span>=<span class="string">"true"</span>  <span class="attribute">smtpPort</span>=<span class="string">"0"</span> <span class="attribute">useSsl</span>=<span class="string">"true"</span> /&gt;</div></pre></td></tr></table></figure></p>
+</blockquote>
+<hr>
+<blockquote>
+<h3 id="E-mail-很吵，能整合其他通訊軟體嗎"><a href="#E-mail-很吵，能整合其他通訊軟體嗎" class="headerlink" title="E-mail 很吵，能整合其他通訊軟體嗎?"></a>E-mail 很吵，能整合其他通訊軟體嗎?</h3><p>延伸閱讀：<a href="Elmah 整合 Slack">http://demo.tc/post/817</a></p>
+<p>在 Web API 例外發生的時候通知 Slack</p>
+<p>照demo哥的文章，應該能申請到一個Web Hook URL，只要在上面提到的 <code>ExceptionFilterAttribute</code> 實作就好了，我通常會用一個介面來實作各個通知機制，內容通常是引導到 Elmah Dashboard，logBoardUrl這個變數會針對不同的site去寫入URL<br><figure class="highlight autohotkey"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">NotifyService.Error($<span class="string">"Unexpected Error From `API`, Error Logs : &lt;&#123;logBoardUrl&#125;&gt;"</span>)<span class="comment">;</span></div></pre></td></tr></table></figure></p>
+<p>(Slack Payload Format可以有很多玩法 可以有很多應用喔，譬如能加Button，自己做處理流程 :) )<br><a href="https://api.slack.com/docs/message-formatting" target="_blank" rel="external">https://api.slack.com/docs/message-formatting</a></p>
+<p>以下簡單用 WebClinet發送的範例<br><figure class="highlight cs"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">SlackService</span> : <span class="title">INotificationService</span></div><div class="line">&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Error</span>(<span class="params"><span class="keyword">string</span> message</span>)</span></div><div class="line">    &#123;</div><div class="line">        <span class="keyword">var</span> hook = ConfigurationManager.AppSettings[<span class="string">"SlackErrorHook"</span>];</div><div class="line">        <span class="keyword">var</span> serverName = ConfigurationManager.AppSettings[<span class="string">"ServerName"</span>];</div><div class="line">        <span class="keyword">var</span> payload = <span class="keyword">new</span></div><div class="line">        &#123;</div><div class="line">            text = message,</div><div class="line">            icon_emoji = <span class="string">":what:"</span>, <span class="comment">// 自訂不要那麼焦慮的ICON</span></div><div class="line">            username = <span class="string">"黑人問號Bot "</span> + serverName</div><div class="line">        &#125;;</div><div class="line"></div><div class="line">        <span class="keyword">using</span> (WebClient client = <span class="keyword">new</span> WebClient())</div><div class="line">        &#123;</div><div class="line">            NameValueCollection slack_payload = <span class="keyword">new</span> NameValueCollection();</div><div class="line">            slack_payload[<span class="string">"payload"</span>] = JsonConvert.SerializeObject(payload); </div><div class="line">            <span class="keyword">var</span> _uri = hook;</div><div class="line">            <span class="keyword">var</span> response = client.UploadValues(_uri, <span class="string">"POST"</span>, slack_payload);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+</blockquote>
+<h2 id="後記"><a href="#後記" class="headerlink" title="後記"></a>後記</h2><p>寫到這裡突然發現篇幅過長，Nlog留到下一篇吧 Q_Q</p>
 
       
 
@@ -227,7 +249,7 @@
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">HangFire</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Elmah</a>
         		</li>
       		
 		</ul>
@@ -283,7 +305,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="http://s.jiathis.com/qrcode.php?url=http://litten.me/2017/07/25/hangfire-sql-server/" alt="微信分享二维码">
+      <img src="http://s.jiathis.com/qrcode.php?url=http://litten.me/2017/08/26/nlog-elmah-together/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -297,18 +319,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2017/08/26/nlog-elmah-together/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          Elmah + Nlog 摻在一起做Exception Logs吧 - Elmah 部分
-        
-      </div>
-    </a>
   
-  
-    <a href="/2017/07/23/my-first-helloworld/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Github Page Hello World</div>
+    <a href="/2017/07/25/hangfire-sql-server/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">在ASP.NET利用Hangfire搭配SQL Server來管理排程作業</div>
       <i class="icon-circle-right"></i>
     </a>
   
