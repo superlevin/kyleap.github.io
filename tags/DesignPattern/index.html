@@ -6,24 +6,17 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="//litten.me">
-  <title>Elmah + Nlog 摻在一起做Exception Logs吧 - Nlog 部分 | 程式宅急便</title>
+  <title>Tag: DesignPattern | 程式宅急便</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="前言延續上一篇 Elmah + Nlog 摻在一起做Exception Logs吧 - Elmah 部分  ，Elmah 無法針對錯誤的類型做分級，而有時候很多排程程式也很需要log一些情況去監控，這部分我會選擇 Nlog，本篇介紹如何將Nlog整合至Elmah。">
-<meta name="keywords" content="ASP.NET,Nlog">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Elmah + Nlog 摻在一起做Exception Logs吧 - Nlog 部分">
-<meta property="og:url" content="//litten.me/2017/08/26/nlog-elmah-together2/index.html">
+  <meta name="description" content="ASP.NET、C#、MVC、Angular.js、jQuery…Sharing what I Know !">
+<meta property="og:type" content="website">
+<meta property="og:title" content="程式宅急便">
+<meta property="og:url" content="//litten.me/tags/DesignPattern/index.html">
 <meta property="og:site_name" content="程式宅急便">
-<meta property="og:description" content="前言延續上一篇 Elmah + Nlog 摻在一起做Exception Logs吧 - Elmah 部分  ，Elmah 無法針對錯誤的類型做分級，而有時候很多排程程式也很需要log一些情況去監控，這部分我會選擇 Nlog，本篇介紹如何將Nlog整合至Elmah。">
-<meta property="og:image" content="//litten.me/2017/08/26/nlog-elmah-together2/847.png">
-<meta property="og:image" content="//litten.me/2017/08/26/nlog-elmah-together2/1251.png">
-<meta property="og:image" content="//litten.me/2017/08/26/nlog-elmah-together2/2048.png">
-<meta property="og:image" content="//litten.me/2017/08/26/nlog-elmah-together2/2251.png">
-<meta property="og:updated_time" content="2017-08-26T08:34:34.824Z">
+<meta property="og:description" content="ASP.NET、C#、MVC、Angular.js、jQuery…Sharing what I Know !">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Elmah + Nlog 摻在一起做Exception Logs吧 - Nlog 部分">
-<meta name="twitter:description" content="前言延續上一篇 Elmah + Nlog 摻在一起做Exception Logs吧 - Elmah 部分  ，Elmah 無法針對錯誤的類型做分級，而有時候很多排程程式也很需要log一些情況去監控，這部分我會選擇 Nlog，本篇介紹如何將Nlog整合至Elmah。">
-<meta name="twitter:image" content="//litten.me/2017/08/26/nlog-elmah-together2/847.png">
+<meta name="twitter:title" content="程式宅急便">
+<meta name="twitter:description" content="ASP.NET、C#、MVC、Angular.js、jQuery…Sharing what I Know !">
   
     <link rel="alternative" href="/atom.xml" title="程式宅急便" type="application/atom+xml">
   
@@ -161,186 +154,60 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-nlog-elmah-together2" class="article article-type-post " itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
+            
   
-    <h1 class="article-title" itemprop="name">
-      Elmah + Nlog 摻在一起做Exception Logs吧 - Nlog 部分
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2017" class="archive-year">2017</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2017/08/29/proxy-pattern/" class="archive-article-date">
+  	<time datetime="2017-08-29T12:28:46.857Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-08-29</time>
+</a>
+        </div>
+    	 
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2017/08/29/proxy-pattern/">代理模式 Proxy Pattern</a>
     </h1>
   
 
-        
-        <a href="/2017/08/26/nlog-elmah-together2/" class="archive-article-date">
-  	<time datetime="2017-08-26T08:26:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-08-26</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <hr>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>延續上一篇 <a href="https://kyleap.github.io/2017/08/26/nlog-elmah-together/#more" target="_blank" rel="external">Elmah + Nlog 摻在一起做Exception Logs吧 - Elmah 部分 </a> ，Elmah 無法針對錯誤的類型做分級，而有時候很多排程程式也很需要log一些情況去監控，這部分我會選擇 <a href="http://nlog-project.org/" target="_blank" rel="external">Nlog</a>，本篇介紹如何將Nlog整合至Elmah。</p>
-<a id="more"></a>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>ASP.NET Web API (.NET Freamwork 4.7)</li>
-<li>Nlog v4.4.12</li>
-<li>Nlog.Config v4.4.12</li>
-<li>NLog.Elmah v4.0.0</li>
-</ul>
-<h2 id="Nuget-安裝"><a href="#Nuget-安裝" class="headerlink" title="Nuget 安裝"></a>Nuget 安裝</h2><img src="/2017/08/26/nlog-elmah-together2/847.png" alt="847.png" title="">
-<h2 id="設定寫入log時至-Elmah-SQL-Server"><a href="#設定寫入log時至-Elmah-SQL-Server" class="headerlink" title="設定寫入log時至 Elmah SQL Server"></a>設定寫入log時至 Elmah SQL Server</h2><p>開啟 <code>NLog.config</code> 設定</p>
-<figure class="highlight dust"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="xml"><span class="tag">&lt;<span class="name">extensions</span>&gt;</span></span></div><div class="line">  <span class="tag">&lt;<span class="name">add</span> <span class="attr">assembly</span>=<span class="string">"NLog.Elmah"</span> /&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">extensions</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">targets</span>&gt;</span></div><div class="line">  <span class="comment">&lt;!-- 自訂Elmah錯誤類型Format (https://github.com/nlog/NLog/wiki/Targets) --&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">target</span> <span class="attr">xsi:type</span>=<span class="string">"Elmah"</span> <span class="attr">name</span>=<span class="string">"elmah"</span>  <span class="attr">layout</span>=<span class="string">"$</span></span><span class="template-variable">&#123;message&#125;</span><span class="xml"><span class="tag"><span class="string">"</span> <span class="attr">LogLevelAsType</span>=<span class="string">"true"</span> /&gt;</span></span></div><div class="line"><span class="tag">&lt;/<span class="name">targets</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">rules</span>&gt;</span></div><div class="line">  <span class="comment">&lt;!--</span></div><div class="line">  Write all events with minimal level of Debug (So Debug, Info, Warn, Error and Fatal, but not Trace)  to "f"</div><div class="line">  &lt;logger name="*" minlevel="Debug" writeTo="f" /&gt;</div><div class="line">  --&gt;</div><div class="line">  </div><div class="line">  <span class="comment">&lt;!-- 設定何種錯誤類型要寫入至Elmah --&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">logger</span> <span class="attr">name</span>=<span class="string">"*"</span> <span class="attr">minlevel</span>=<span class="string">"Error"</span> <span class="attr">writeTo</span>=<span class="string">"elmah"</span> /&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;/<span class="name">rules</span>&gt;</span></div></pre></td></tr></table></figure>
-<blockquote>
-<p>延伸閱讀 Layout可設定的參數 <a href="https://github.com/nlog/NLog/wiki/Layout-Renderers" target="_blank" rel="external">https://github.com/nlog/NLog/wiki/Layout-Renderers</a></p>
-</blockquote>
-<p>在程式裡寫入Log測試</p>
-<figure class="highlight abnf"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">var logger = NLog.LogManager.GetCurrentClassLogger()<span class="comment">;</span></div><div class="line">logger.Error(<span class="string">"發生錯誤!"</span>)<span class="comment">;</span></div></pre></td></tr></table></figure>
-<p>打開會發現 <a href="http://localhost:2484/elmah.axd" target="_blank" rel="external">http://localhost:2484/elmah.axd</a> 未發現此筆紀錄</p>
-<p>原因是 ApplicationName 不一樣</p>
-<img src="/2017/08/26/nlog-elmah-together2/1251.png" alt="1251.png" title="">
-<p>可以於在Elmah加上ApplicationName</p>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;errorLog <span class="attribute">type</span>=<span class="string">"Elmah.SqlErrorLog, Elmah"</span> <span class="attribute">connectionStringName</span>=<span class="string">"elmah-sqlserver"</span> <span class="attribute">applicationName</span>=<span class="string">"MyAPI"</span> /&gt;</div></pre></td></tr></table></figure>
-<p>這樣就能成功將 Nlog 加入至 Elmah Dashboard</p>
-<img src="/2017/08/26/nlog-elmah-together2/2048.png" alt="2048.png" title="">
-<h2 id="切分不同-Application-Name"><a href="#切分不同-Application-Name" class="headerlink" title="切分不同 Application Name"></a>切分不同 Application Name</h2><p>如何區分不同站台呈現不同Log呢，只要搭配VS部屬的小技巧改變config設定即可</p>
-<img src="/2017/08/26/nlog-elmah-together2/2251.png" alt="2251.png" title="">
-<p>在WebConfg.Release時改變ApplicationName</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">  <span class="tag">&lt;<span class="name">system.web</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">compilation</span> <span class="attr">xdt:Transform</span>=<span class="string">"RemoveAttributes(debug)"</span> /&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">system.web</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">elmah</span> <span class="attr">xdt:Transform</span>=<span class="string">"Replace"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">security</span> <span class="attr">allowRemoteAccess</span>=<span class="string">"true"</span> /&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">errorLog</span> <span class="attr">type</span>=<span class="string">"Elmah.SqlErrorLog, Elmah"</span> <span class="attr">connectionStringName</span>=<span class="string">"elmah-sqlserver"</span> <span class="attr">applicationName</span>=<span class="string">"MyAPI.Prod"</span> /&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">elmah</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></div></pre></td></tr></table></figure>
-<p>如果 Log Database 是同一個，就能用這種方式來切分Dashboard的顯示方式</p>
-<h2 id="後記"><a href="#後記" class="headerlink" title="後記"></a>後記</h2><p>Nlog 更多設定&amp;用法請看官方文件wiki <a href="https://github.com/NLog/NLog/wiki/Tutorial" target="_blank" rel="external">https://github.com/NLog/NLog/wiki/Tutorial</a></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
+        <div class="article-info info-on-right">
+          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">ASP.NET</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Nlog</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">DesignPattern</a>
         		</li>
       		
 		</ul>
 	</div>
 
-      
+          
 
-      
-
-      
-        
-<div class="share-btn share-icons tooltip-left">
-  <div class="tooltip tooltip-east">
-    <span class="tooltip-item">
-      <a href="javascript:;" class="share-sns share-outer">
-        <i class="icon icon-share"></i>
-      </a>
-    </span>
-    <span class="tooltip-content">
-      <div class="share-wrap">
-        <div class="share-icons">
-          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
-            <i class="icon icon-weibo"></i>
-          </a>
-          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
-            <i class="icon icon-weixin"></i>
-          </a>
-          <a class="qq share-sns" href="javascript:;" data-type="qq">
-            <i class="icon icon-qq"></i>
-          </a>
-          <a class="douban share-sns" href="javascript:;" data-type="douban">
-            <i class="icon icon-douban"></i>
-          </a>
-          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
-            <i class="icon icon-qzone"></i>
-          </a>
-          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
-            <i class="icon icon-facebook"></i>
-          </a>
-          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
-            <i class="icon icon-twitter"></i>
-          </a>
-          <a class="google share-sns" href="javascript:;" data-type="google">
-            <i class="icon icon-google"></i>
-          </a>
         </div>
-      </div>
-    </span>
-  </div>
-</div>
-
-<div class="page-modal wx-share js-wx-box">
-    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <div class="wx-qrcode">
-      <img src="http://s.jiathis.com/qrcode.php?url=http://litten.me/2017/08/26/nlog-elmah-together2/" alt="微信分享二维码">
-    </div>
-</div>
-
-<div class="mask js-mask"></div>
-      
-      <div class="clearfix"></div>
-    </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
 </article>
-
-  
-<nav id="article-nav">
-  
-    <a href="/2017/08/29/proxy-pattern/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          代理模式 Proxy Pattern
-        
-      </div>
-    </a>
   
   
-    <a href="/2017/08/26/nlog-elmah-together/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Elmah + Nlog 摻在一起做Exception Logs吧 - Elmah 部分</div>
-      <i class="icon-circle-right"></i>
-    </a>
-  
-</nav>
-
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-  
-  
+    </div></section>
   
 
-  
-
-  
+    
 
 
           </div>
@@ -363,9 +230,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: true,
+		isPost: false,
 		isArchive: false,
-		isTag: false,
+		isTag: true,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,

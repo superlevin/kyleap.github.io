@@ -156,6 +156,89 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-proxy-pattern" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/08/29/proxy-pattern/">代理模式 Proxy Pattern</a>
+    </h1>
+  
+
+        
+        <a href="/2017/08/29/proxy-pattern/" class="archive-article-date">
+  	<time datetime="2017-08-29T12:28:46.857Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-08-29</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="定義"><a href="#定義" class="headerlink" title="定義"></a>定義</h2><p>執行某件事時，透過 <code>代理</code> 人，而不直接執行這件事。</p>
+<h2 id="生活情境"><a href="#生活情境" class="headerlink" title="生活情境"></a>生活情境</h2><p>娃娃一直對花花有好感，但因為生性害羞，所以決定初期找個朋友先對花花表示好感，所以 <code>委託</code> 浩浩送情書跟巧克力，結果日久生情，花花就跟浩浩在一起了，過著幸福快樂的日子，可喜可賀，我們幫娃娃QQ。</p>
+<p><strong> 類別圖 </strong></p>
+<p>Program: 程式進入點 (娃娃)<br>Lover: 愛人<br>Friend: 友人<br>IGiveGift: 送禮物的方式<br>Proxy: 委託人</p>
+<img src="/2017/08/29/proxy-pattern/74.png" alt="74.png" title="">
+<p><strong> Lover.cs </strong><br><figure class="highlight cs"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Lover</span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">public</span> <span class="keyword">string</span> Name &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Lover</span>(<span class="params"><span class="keyword">string</span> name</span>)</span></div><div class="line">    &#123;</div><div class="line">        Name = name;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><strong> Friend.cs </strong><br><figure class="highlight cs"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"> <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Friend</span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">public</span> <span class="keyword">string</span> Name &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Friend</span>(<span class="params"><span class="keyword">string</span> name</span>)</span></div><div class="line">    &#123;</div><div class="line">        Name = name;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><strong> IGiveGift.cs </strong><br><figure class="highlight cs"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title">IGiveGift</span></div><div class="line">&#123;</div><div class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></div><div class="line">    <span class="comment"><span class="doctag">///</span> 送花</span></div><div class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">GiveFlowers</span>(<span class="params"></span>)</span>;</div><div class="line"></div><div class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></div><div class="line">    <span class="comment"><span class="doctag">///</span> 送情書</span></div><div class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">GiveLetter</span>(<span class="params"></span>)</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><strong> Program.cs </strong><br><figure class="highlight arduino"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">class Program</div><div class="line">&#123;</div><div class="line">    <span class="keyword">static</span> <span class="keyword">void</span> Main(<span class="keyword">string</span>[] args)</div><div class="line">    &#123;</div><div class="line">        <span class="comment">// 解決.NET Core Console 亂碼</span></div><div class="line">        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance); </div><div class="line"></div><div class="line">        <span class="built_in">Console</span>.WriteLine(<span class="string">"我是娃娃，我愛花花"</span>);</div><div class="line"></div><div class="line">        Lover lover = <span class="keyword">new</span> Lover(<span class="string">"花花"</span>);</div><div class="line"></div><div class="line">        <span class="built_in">Console</span>.WriteLine(<span class="string">"好害羞好害羞，浩浩浩浩，你能幫我拿給花花嗎?"</span>);</div><div class="line"></div><div class="line">        Friend <span class="keyword">friend</span> = <span class="keyword">new</span> Friend(<span class="string">"浩浩"</span>);</div><div class="line"></div><div class="line">        Proxy proxy = <span class="keyword">new</span> Proxy(lover, <span class="keyword">friend</span>);</div><div class="line"></div><div class="line">        proxy.GiveLetter();</div><div class="line">        proxy.GiveFlowers();</div><div class="line"></div><div class="line">        <span class="built_in">Console</span>.WriteLine($<span class="string">"&#123;lover.Name&#125;跟&#123;friend.Name&#125;在一起了，我們幫娃娃QQ"</span>);</div><div class="line"></div><div class="line">        <span class="built_in">Console</span>.Read();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="後記"><a href="#後記" class="headerlink" title="後記"></a>後記</h2><p>娃娃(本公司實習生)應該直接執行花花，不讓浩浩得逞(本公司實習生)<br><code>..有點鬧..之後補實務應用上來 XD</code></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">DesignPattern</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/08/29/proxy-pattern/">閱讀全文</a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-nlog-elmah-together2" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -567,19 +650,23 @@
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Elmah</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">HangFire</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Nlog</a>
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">DesignPattern</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">Elmah</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">碎碎念</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">HangFire</a>
               </li>
             
             <div class="clearfix"></div>
