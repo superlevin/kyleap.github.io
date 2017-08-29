@@ -187,6 +187,7 @@
 <p><strong> Proxy.cs </strong><br><figure class="highlight cs"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Proxy</span> : <span class="title">IGiveGift</span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">private</span> Lover Lover &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> Friend Friend &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Proxy</span>(<span class="params">Lover lover, Friend friend</span>)</span></div><div class="line">    &#123;</div><div class="line">        Lover = lover;</div><div class="line">        Friend = friend;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">GiveFlowers</span>(<span class="params"></span>)</span></div><div class="line">    &#123;</div><div class="line">        Console.WriteLine(<span class="string">$"<span class="subst">&#123;Friend.Name&#125;</span>:<span class="subst">&#123;Lover.Name&#125;</span>，這是我朋友要送你的花..."</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">GiveLetter</span>(<span class="params"></span>)</span></div><div class="line">    &#123;</div><div class="line">        Console.WriteLine(<span class="string">$"<span class="subst">&#123;Friend.Name&#125;</span>:<span class="subst">&#123;Lover.Name&#125;</span>，這是我朋友要送你的情書..."</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <p><strong> Program.cs </strong><br><figure class="highlight arduino"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">class Program</div><div class="line">&#123;</div><div class="line">    <span class="keyword">static</span> <span class="keyword">void</span> Main(<span class="keyword">string</span>[] args)</div><div class="line">    &#123;</div><div class="line">        <span class="comment">// 解決.NET Core Console 亂碼</span></div><div class="line">        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance); </div><div class="line"></div><div class="line">        <span class="built_in">Console</span>.WriteLine(<span class="string">"我是娃娃，我愛花花"</span>);</div><div class="line"></div><div class="line">        Lover lover = <span class="keyword">new</span> Lover(<span class="string">"花花"</span>);</div><div class="line"></div><div class="line">        <span class="built_in">Console</span>.WriteLine(<span class="string">"好害羞好害羞，浩浩浩浩，你能幫我拿給花花嗎?"</span>);</div><div class="line"></div><div class="line">        Friend <span class="keyword">friend</span> = <span class="keyword">new</span> Friend(<span class="string">"浩浩"</span>);</div><div class="line"></div><div class="line">        Proxy proxy = <span class="keyword">new</span> Proxy(lover, <span class="keyword">friend</span>);</div><div class="line"></div><div class="line">        proxy.GiveLetter();</div><div class="line">        proxy.GiveFlowers();</div><div class="line"></div><div class="line">        <span class="built_in">Console</span>.WriteLine($<span class="string">"&#123;lover.Name&#125;跟&#123;friend.Name&#125;在一起了，我們幫娃娃QQ"</span>);</div><div class="line"></div><div class="line">        <span class="built_in">Console</span>.Read();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <h2 id="後記"><a href="#後記" class="headerlink" title="後記"></a>後記</h2><p>娃娃(本公司實習生)應該直接執行花花，不讓浩浩得逞(本公司實習生)<br><code>..有點鬧..之後補實務應用上來 XD</code></p>
+<p>推薦大話設計這本書<br><a href="http://24h.pchome.com.tw/books/prod/DJAA07-A70091175" target="_blank" rel="external">http://24h.pchome.com.tw/books/prod/DJAA07-A70091175</a></p>
 
       
 
@@ -647,15 +648,7 @@
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">碎碎念</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">ASP.NET</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">HangFire</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -663,11 +656,19 @@
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Elmah</a>
+                <a href="javascript:void(0)" class="js-tag color4">碎碎念</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">HangFire</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">DesignPattern</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">Elmah</a>
               </li>
             
             <div class="clearfix"></div>
